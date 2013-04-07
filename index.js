@@ -3,7 +3,13 @@ var Freud = require('freud').Freud,
   md = require('node-markdown').Markdown,
   jade = require('jade'),
   stylus = require('stylus'),
-  coffee = require('coffee-script');
+  coffee = require('coffee-script'),
+  uncanny = {
+    "uncanny": {
+      "version": "0.0.1",
+      "posts": []
+    }
+  };
 
 var freud = new Freud(config.source, config.target);
 
@@ -24,11 +30,7 @@ freud.listen('coffee', function (file) {
 freud.listen('jade', function (file) {
   file.name = file.name.replace(/\.jade/, (config.jade || '.html'));
   var fn = jade.compile(file.data);
-  file.data = fn({
-    'uncanny': {
-      'version': '0.0.1'
-    }
-  });
+  file.data = fn(uncanny);
 
   return file;
 });
