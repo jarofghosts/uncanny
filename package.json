@@ -1,0 +1,15 @@
+{
+  "name": "uncanny",
+  "version": "0.0.0",
+  "description": "flat file blog",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jarofghosts/uncanny.git"
+  },
+  "keywords": [
+    "blog"
+  ],
+  "author": "jesse keane <me@jessekeane.me> (http://jessekeane.me)",
+  "license": "BSD"
+}
