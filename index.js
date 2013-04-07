@@ -15,7 +15,7 @@ freud.listen('md', function (file) {
 });
 
 freud.listen('coffee', function (file) {
-  file.name = file.name.replace(/\.coffee/, '.coffee');
+  file.name = file.name.replace(/\.coffee/, '.js');
   file.data = coffee.compile(file.data);
 
   return file;
@@ -24,7 +24,11 @@ freud.listen('coffee', function (file) {
 freud.listen('jade', function (file) {
   file.name = file.name.replace(/\.jade/, (config.jade || '.html'));
   var fn = jade.compile(file.data);
-  file.data = fn({});
+  file.data = fn({
+    'uncanny': {
+      'version': '0.0.1'
+    }
+  });
 
   return file;
 });
@@ -35,8 +39,9 @@ freud.listen('styl', function (file) {
     if (err) { throw err; }
 
     file.data = css;
-    return file;
   });
+
+  return file;
 });
 
 freud.go();
