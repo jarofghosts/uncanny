@@ -1,15 +1,42 @@
 var Freud = require('freud').Freud,
-  md = require('node-markdown').Markdown,
   config = require('./config.json'),
-  jade = require('jade');
+  md = require('node-markdown').Markdown,
+  jade = require('jade'),
+  stylus = require('stylus'),
+  coffee = require('coffee-script');
 
 var freud = new Freud(config.source, config.target);
 
 freud.listen('md', function (file) {
-  file.name = file.name.replace(/\.md$/, '.html');
+  file.name = file.name.replace(/\.md$/, (config.md || '.htm'));
   file.data = md(file.data);
 
   return file;
+});
+
+freud.listen('coffee', function (file) {
+  file.name = file.name.replace(/\.coffee/, '.coffee');
+  file.data = coffee.compile(file.data);
+
+  return file;
+});
+
+freud.listen('jade', function (file) {
+  file.name = file.name.replace(/\.jade/, (config.jade || '.html'));
+  var fn = jade.compile(file.data);
+  file.data = fn({});
+
+  return file;
+});
+
+freud.listen('styl', function (file) {
+  file.name = file.name.replace(/\.styl/, '.css');
+  stylus.render(file.data, function (err, css) {
+    if (err) { throw err; }
+
+    file.data = css;
+    return file;
+  });
 });
 
 freud.go();

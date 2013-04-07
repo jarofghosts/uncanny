@@ -6,7 +6,9 @@
   "dependencies": {
     "freud": "*",
     "node-markdown": "*",
-    "jade": "*"
+    "jade": "*",
+    "coffee-script": "*",
+    "stylus": "*"
   },
   "repository": {
     "type": "git",

@@ -1,4 +1,6 @@
 {
   "source": "/home/jarofghosts/flog-src",
-  "target": "/home/jarofghosts/flog"
+  "target": "/home/jarofghosts/flog",
+  "md": ".htm",
+  "jade": ".html"
 }
