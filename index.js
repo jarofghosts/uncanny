@@ -1,4 +1,5 @@
 var Freud = require('freud').Freud,
+  fs = require('fs'),
   config = require('./config.json'),
   md = require('node-markdown').Markdown,
   jade = require('jade'),
@@ -47,3 +48,14 @@ freud.listen('styl', function (file) {
 });
 
 freud.go();
+
+if (config.syncOnInit) {
+  fs.readdir(config.source, function (err, files) {
+    if (err) { throw err; }
+
+    files.forEach(function (file) {
+      freud.recompile(file);
+    });
+
+  });
+}

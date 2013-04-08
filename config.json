@@ -2,5 +2,6 @@
   "source": "/home/jarofghosts/flog-src",
   "target": "/home/jarofghosts/flog",
   "md": ".htm",
-  "jade": ".html"
+  "jade": ".html",
+  "syncOnInit": true
 }
