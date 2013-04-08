@@ -18,5 +18,6 @@
     "blog"
   ],
   "author": "jesse keane <me@jessekeane.me> (http://jessekeane.me)",
-  "license": "BSD"
+  "license": "BSD",
+  "private": true
 }
