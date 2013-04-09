@@ -1,7 +1,8 @@
 {
-  "source": "/home/jarofghosts/flog-src",
-  "target": "/home/jarofghosts/flog",
+  "source": "/home/jarofghosts/flog-src/",
+  "target": "/home/jarofghosts/flog/",
   "md": ".htm",
   "jade": ".html",
-  "syncOnInit": true
+  "syncOnInit": true,
+  "watchDotFile": false
 }

@@ -7,12 +7,52 @@ var Freud = require('freud').Freud,
   coffee = require('coffee-script'),
   uncanny = {
     "uncanny": {
-      "version": "0.0.1",
-      "posts": []
+      "version": "0.0.2",
+      "files": []
     }
   };
 
-var freud = new Freud(config.source, config.target);
+var freud = new Freud(config.source, config.target, {
+  "monitorDot": config.watchDotFile,
+  "monitorSquiggle": false
+});
+
+function _rebuildUncanny(callback) {
+  fs.readdir(config.source, function (err, files) {
+    if (err) { throw err; }
+
+    files.forEach(function (filename) {
+      fs.stats(config.source + filename, function (err, stats) {
+
+        var fileObject = {
+          "name": filename,
+          "stats": stats
+        };
+
+        if (filename.match(/\./)) {
+          var extension = filename.split('.').pop();
+          uncanny.uncanny.files[extension] = uncanny.uncanny.files[extension] || [];
+          uncanny.uncanny.files[extension].push(fileObject);
+        } else {
+          uncanny.uncanny.files['!'] = uncanny.uncanny.files['!'] || [];
+          uncanny.uncanny.files['!'].push(fileObject);
+        }
+      });
+    });
+  });
+}
+
+function _recompileJade() {
+  fs.readdir(config.source, function (err, files) {
+    if (err) { throw err; }
+
+    files.forEach(function (filename) {
+      if (filename.match(/\.jade$/)) {
+        freud.recompile(filename);
+      }
+    });
+  });
+}
 
 freud.listen('md', function (file) {
   file.name = file.name.replace(/\.md$/, (config.md || '.htm'));
@@ -59,3 +99,11 @@ if (config.syncOnInit) {
 
   });
 }
+
+freud.on('compiled', function (file) {
+  if (file.name.match(/\.htm$/)) {
+    _rebuildUncanny(function () {
+      _recompileJade();
+    });
+  }
+});
