@@ -7,7 +7,7 @@ var Freud = require('freud').Freud,
   coffee = require('coffee-script'),
   uncanny = {
     "uncanny": {
-      "version": "0.0.2",
+      "version": "0.0.3",
       "files": []
     }
   };
@@ -70,7 +70,9 @@ freud.listen('coffee', function (file) {
 
 freud.listen('jade', function (file) {
   file.name = file.name.replace(/\.jade/, (config.jade || '.html'));
-  var fn = jade.compile(file.data);
+  var fn = jade.compile(file.data, {
+    "filename": config.target + file.name
+  });
   file.data = fn(uncanny);
 
   return file;
@@ -100,8 +102,8 @@ if (config.syncOnInit) {
   });
 }
 
-freud.on('compiled', function (file) {
-  if (file.name.match(/\.htm$/)) {
+freud.on('compiled', function (filename) {
+  if (filename.match(/\.md$/)) {
     _rebuildUncanny(function () {
       _recompileJade();
     });
