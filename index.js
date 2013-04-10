@@ -41,7 +41,7 @@ function _rebuildUncanny(callback) {
 
       });
     });
-    callback();
+    if (callback !== undefined) { callback(); }
   });
 }
 
