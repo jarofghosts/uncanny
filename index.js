@@ -37,6 +37,8 @@ function _rebuildUncanny(callback) {
           uncanny.uncanny.files['!'] = uncanny.uncanny.files['!'] || [];
           uncanny.uncanny.files['!'].push(fileObject);
         }
+
+        callback();
       });
     });
   });
