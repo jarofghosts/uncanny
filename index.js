@@ -23,23 +23,25 @@ function _rebuildUncanny(callback) {
     if (err) { throw err; }
 
     files.forEach(function (filename) {
-      fs.stat(config.source + filename, function (err, stats) {
+      if (-ignore.indexOf(filename)) {
+        fs.stat(config.source + filename, function (err, stats) {
 
-        var fileObject = {
-          "name": filename,
-          "stats": stats
-        };
+          var fileObject = {
+            "name": filename,
+            "stats": stats
+          };
 
-        if (filename.match(/\./)) {
-          var extension = filename.split('.').pop();
-          uncanny.uncanny.files[extension] = uncanny.uncanny.files[extension] || [];
-          uncanny.uncanny.files[extension].push(fileObject);
-        } else {
-          uncanny.uncanny.files['!'] = uncanny.uncanny.files['!'] || [];
-          uncanny.uncanny.files['!'].push(fileObject);
-        }
+          if (filename.match(/\./)) {
+            var extension = filename.split('.').pop();
+            uncanny.uncanny.files[extension] = uncanny.uncanny.files[extension] || [];
+            uncanny.uncanny.files[extension].push(fileObject);
+          } else {
+            uncanny.uncanny.files['!'] = uncanny.uncanny.files['!'] || [];
+            uncanny.uncanny.files['!'].push(fileObject);
+          }
 
-      });
+        });
+      }
     });
     if (callback !== undefined) { callback(); }
   });
