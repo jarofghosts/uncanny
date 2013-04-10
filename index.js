@@ -95,8 +95,9 @@ freud.listen('styl', function (file) {
 freud.listen('*:before', function (file) {
   if (!-ignore.indexOf(file.name)) {
     file.write = false;
-    return file;
   }
+
+  return file;
 });
 
 freud.go();
