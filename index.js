@@ -22,7 +22,7 @@ function _rebuildUncanny(callback) {
     if (err) { throw err; }
 
     files.forEach(function (filename) {
-      fs.stats(config.source + filename, function (err, stats) {
+      fs.stat(config.source + filename, function (err, stats) {
 
         var fileObject = {
           "name": filename,
@@ -101,6 +101,10 @@ if (config.syncOnInit) {
 
   });
 }
+
+freud.on('started', function () {
+  _rebuildUncanny();
+});
 
 freud.on('compiled', function (filename) {
   if (filename.match(/\.md$/)) {
