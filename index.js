@@ -109,7 +109,7 @@ freud.on('started', function () {
 });
 
 freud.on('compiled', function (filename) {
-  if (filename.match(/\.md$/)) {
+  if (!filename.match(/\.jade$/)) {
     _rebuildUncanny(function () {
       _recompileJade();
     });
