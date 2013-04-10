@@ -7,7 +7,7 @@ var Freud = require('freud').Freud,
   coffee = require('coffee-script'),
   uncanny = {
     "uncanny": {
-      "version": "0.0.5",
+      "version": "0.0.6",
       "files": []
     }
   },
@@ -34,14 +34,15 @@ function _rebuildUncanny(callback) {
           var extension = filename.split('.').pop();
           uncanny.uncanny.files[extension] = uncanny.uncanny.files[extension] || [];
           uncanny.uncanny.files[extension].push(fileObject);
+          console.log(uncanny.uncanny.files[extension][0]);
         } else {
           uncanny.uncanny.files['!'] = uncanny.uncanny.files['!'] || [];
           uncanny.uncanny.files['!'].push(fileObject);
         }
 
-        callback();
       });
     });
+    callback();
   });
 }
 
@@ -115,6 +116,7 @@ if (config.syncOnInit) {
 
 freud.on('started', function () {
   _rebuildUncanny();
+  process.title = config.title || 'uncanny.';
 });
 
 freud.on('compiled', function (filename) {

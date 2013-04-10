@@ -7,5 +7,6 @@
   "md": ".htm",
   "jade": ".html",
   "syncOnInit": true,
-  "watchDotFile": false
+  "watchDotFile": false,
+  "title": "blawg"
 }
