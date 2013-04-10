@@ -34,7 +34,6 @@ function _rebuildUncanny(callback) {
           var extension = filename.split('.').pop();
           uncanny.uncanny.files[extension] = uncanny.uncanny.files[extension] || [];
           uncanny.uncanny.files[extension].push(fileObject);
-          console.log(uncanny.uncanny.files[extension][0]);
         } else {
           uncanny.uncanny.files['!'] = uncanny.uncanny.files['!'] || [];
           uncanny.uncanny.files['!'].push(fileObject);
@@ -114,11 +113,6 @@ if (config.syncOnInit) {
   });
 }
 
-freud.on('started', function () {
-  _rebuildUncanny();
-  process.title = config.title || 'uncanny.';
-});
-
 freud.on('compiled', function (filename) {
   if (!filename.match(/\.jade$/)) {
     _rebuildUncanny(function () {
@@ -126,3 +120,6 @@ freud.on('compiled', function (filename) {
     });
   }
 });
+
+_rebuildUncanny();
+process.title = config.title || 'uncanny.';
