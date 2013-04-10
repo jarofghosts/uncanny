@@ -1,6 +1,9 @@
 {
   "source": "/home/jarofghosts/flog-src/",
   "target": "/home/jarofghosts/flog/",
+  "ignore": [
+    "secrets.md"
+  ],
   "md": ".htm",
   "jade": ".html",
   "syncOnInit": true,

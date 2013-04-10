@@ -7,10 +7,11 @@ var Freud = require('freud').Freud,
   coffee = require('coffee-script'),
   uncanny = {
     "uncanny": {
-      "version": "0.0.3",
+      "version": "0.0.5",
       "files": []
     }
-  };
+  },
+  ignore = config.ignore || [];
 
 var freud = new Freud(config.source, config.target, {
   "monitorDot": config.watchDotFile,
@@ -49,7 +50,7 @@ function _recompileJade() {
     if (err) { throw err; }
 
     files.forEach(function (filename) {
-      if (filename.match(/\.jade$/)) {
+      if (filename.match(/\.jade$/) && -ignore.indexOf(filename)) {
         freud.recompile(filename);
       }
     });
@@ -89,6 +90,13 @@ freud.listen('styl', function (file) {
   });
 
   return file;
+});
+
+freud.listen('*:before', function (file) {
+  if (!-ignore.indexOf(file.name)) {
+    file.write = false;
+    return file;
+  }
 });
 
 freud.go();
