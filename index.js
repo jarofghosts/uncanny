@@ -6,7 +6,7 @@ var Freud = require('freud').Freud,
   stylus = require('stylus'),
   coffee = require('coffee-script'),
   sqwish = require('sqwish').minify,
-  smushit = require('smushit').smushit,
+  smushit = require('node-smushit').smushit,
   uglify = require('uglify-js'),
   uncanny = {
     "uncanny": {
