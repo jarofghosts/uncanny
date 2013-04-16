@@ -5,9 +5,12 @@ var Freud = require('freud').Freud,
   jade = require('jade'),
   stylus = require('stylus'),
   coffee = require('coffee-script'),
+  sqwish = require('sqwish').minify,
+  smushit = require('smushit').smushit,
+  uglify = require('uglify-js'),
   uncanny = {
     "uncanny": {
-      "version": "0.0.6",
+      "version": "0.0.7",
       "files": []
     }
   },
@@ -67,14 +70,17 @@ freud.listen('md', function (file) {
 });
 
 freud.listen('coffee', function (file) {
-  file.name = file.name.replace(/\.coffee/, '.js');
+  file.name = file.name.replace(/\.coffee$/, '.js');
   file.data = coffee.compile(file.data);
+  if (file.name.match(/\.min.js$/)) {
+    file.data = uglify.minify(file.data, { fromString: true });
+  }
 
   return file;
 });
 
 freud.listen('jade', function (file) {
-  file.name = file.name.replace(/\.jade/, (config.jade || '.html'));
+  file.name = file.name.replace(/\.jade$/, (config.jade || '.html'));
   var fn = jade.compile(file.data, {
     "filename": config.target + file.name
   });
@@ -84,14 +90,25 @@ freud.listen('jade', function (file) {
 });
 
 freud.listen('styl', function (file) {
-  file.name = file.name.replace(/\.styl/, '.css');
+  file.name = file.name.replace(/\.styl$/, '.css');
   stylus.render(file.data, function (err, css) {
     if (err) { throw err; }
 
-    file.data = css;
+    file.data = file.name.match(/\.min.css$/) ? css : sqwish(css);
+
   });
 
   return file;
+});
+
+freud.listen('min.css', function (file) {
+  file.data = sqwish(file.data);
+
+  return file;
+});
+
+freud.listen('min.js', function (file) {
+  file.data = uglify.minify(file.data, { fromString: true });
 });
 
 freud.listen('*:before', function (file) {
@@ -120,6 +137,9 @@ freud.on('compiled', function (filename) {
     _rebuildUncanny(function () {
       _recompileJade();
     });
+  }
+  if (filename.match(/(\.jpg$|\.png$|\.gif$)/)) {
+    smushit(config.target + filename);
   }
 });
 
