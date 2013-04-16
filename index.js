@@ -94,7 +94,7 @@ freud.listen('styl', function (file) {
   stylus.render(file.data, function (err, css) {
     if (err) { throw err; }
 
-    file.data = file.name.match(/\.min.css$/) ? css : sqwish(css);
+    file.data = file.name.match(/\.min.css$/) ? sqwish(css) : css;
 
   });
 
