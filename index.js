@@ -13,7 +13,8 @@ var Freud = require('freud').Freud,
     "uncanny": {
       "version": "0.0.7",
       "files": []
-    }
+    },
+    "config": config
   },
   ignore = config.ignore || [];
 
@@ -67,9 +68,9 @@ freud.listen('*:before', function (file) {
   return file;
 });
 
-freud.list('*:after', function (file) {
+freud.listen('*:after', function (file) {
   if (file.name.match(/\.min.js$/)) {
-    file.data = uglify.minify(file.data, { fromString: true });
+    file.data = uglify.minify(file.data, { fromString: true }).code;
   }
 
   if (file.name.match(/\.min.css$/)) {
@@ -95,14 +96,14 @@ if (config.syncOnInit) {
 freud.on('compiled', function (filename) {
   var jadeExtension = config.jade || '.html';
   if (!filename.match(/\.html$/)) {
-    unlib.rebuildUncanny(function () {
-      unlib.recompileJade();
+    unlib.rebuildUncanny(uncanny, function () {
+      unlib.recompileJade(uncanny, freud);
     });
   }
   if (filename.match(/(\.jpg$|\.png$|\.gif$)/) && config.optimizeImages) {
-    smushit(config.target + filename);
+    smushit(uncanny.config.target + filename);
   }
 });
 
-unlib.rebuildUncanny();
+unlib.rebuildUncanny(uncanny);
 process.title = config.title || 'uncanny.';
