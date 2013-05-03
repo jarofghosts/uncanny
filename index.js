@@ -6,7 +6,6 @@ var Freud = require('freud').Freud,
   stylus = require('stylus'),
   coffee = require('coffee-script'),
   sqwish = require('sqwish').minify,
-  smushit = require('node-smushit').smushit,
   uglify = require('uglify-js'),
   unlib = require('./lib/uncanny.js'),
   uncanny = {
@@ -99,9 +98,6 @@ freud.on('compiled', function (filename) {
     unlib.rebuildUncanny(uncanny, function () {
       unlib.recompileJade(uncanny, freud);
     });
-  }
-  if (filename.match(/(\.jpg$|\.png$|\.gif$)/) && config.optimizeImages) {
-    smushit(uncanny.config.target + filename);
   }
 });
 
