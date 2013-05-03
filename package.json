@@ -1,6 +1,6 @@
 {
   "name": "uncanny",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "flat file blog",
   "main": "index.js",
   "dependencies": {

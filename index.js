@@ -10,7 +10,7 @@ var Freud = require('freud').Freud,
   unlib = require('./lib/uncanny.js'),
   uncanny = {
     "uncanny": {
-      "version": "0.0.7",
+      "version": "0.0.8",
       "files": []
     },
     "config": config
