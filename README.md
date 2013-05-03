@@ -20,8 +20,6 @@ Will watch `source` for changes and compile them, then dump them into `target`. 
 ----
 
 Further configuration options include:
-* `md` to choose the default file extension for rendered Markdown files. Default is .htm
-* `jade` to choose the default file extension for rendered jade files. Default is .html
 * `syncOnInit` to compile and copy all files from the source directory into the target on startup. Default is `false`.
 * `watchDotFile` to watch and compile dotfiles.
 * `ignore` which accepts an array of filenames to ignore. They will not be moved to the target directory at all.

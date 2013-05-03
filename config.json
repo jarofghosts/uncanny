@@ -4,9 +4,8 @@
   "ignore": [
     "secrets.md"
   ],
-  "md": ".htm",
-  "jade": ".html",
   "syncOnInit": true,
   "watchDotFile": false,
-  "title": "blawg"
+  "title": "blawg",
+  "optimizeImages": true
 }

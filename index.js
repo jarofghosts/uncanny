@@ -8,6 +8,7 @@ var Freud = require('freud').Freud,
   sqwish = require('sqwish').minify,
   smushit = require('node-smushit').smushit,
   uglify = require('uglify-js'),
+  unlib = require('./lib/uncanny.js'),
   uncanny = {
     "uncanny": {
       "version": "0.0.7",
@@ -21,47 +22,6 @@ var freud = new Freud(config.source, config.target, {
   "monitorSquiggle": false
 });
 
-function _rebuildUncanny(callback) {
-  fs.readdir(config.source, function (err, files) {
-    if (err) { throw err; }
-
-    files.forEach(function (filename) {
-      if (-ignore.indexOf(filename)) {
-        fs.stat(config.source + filename, function (err, stats) {
-
-          var fileObject = {
-            "name": filename,
-            "stats": stats
-          };
-
-          if (filename.match(/\./)) {
-            var extension = filename.split('.').pop();
-            uncanny.uncanny.files[extension] = uncanny.uncanny.files[extension] || [];
-            uncanny.uncanny.files[extension].push(fileObject);
-          } else {
-            uncanny.uncanny.files['!'] = uncanny.uncanny.files['!'] || [];
-            uncanny.uncanny.files['!'].push(fileObject);
-          }
-
-        });
-      }
-    });
-    if (callback !== undefined) { callback(); }
-  });
-}
-
-function _recompileJade() {
-  fs.readdir(config.source, function (err, files) {
-    if (err) { throw err; }
-
-    files.forEach(function (filename) {
-      if (filename.match(/\.jade$/) && -ignore.indexOf(filename)) {
-        freud.recompile(filename);
-      }
-    });
-  });
-}
-
 freud.listen('md', function (file) {
   file.name = file.name.replace(/\.md$/, (config.md || '.htm'));
   file.data = md(file.data);
@@ -72,9 +32,7 @@ freud.listen('md', function (file) {
 freud.listen('coffee', function (file) {
   file.name = file.name.replace(/\.coffee$/, '.js');
   file.data = coffee.compile(file.data);
-  if (file.name.match(/\.min.js$/)) {
-    file.data = uglify.minify(file.data, { fromString: true });
-  }
+
 
   return file;
 });
@@ -101,19 +59,21 @@ freud.listen('styl', function (file) {
   return file;
 });
 
-freud.listen('min.css', function (file) {
-  file.data = sqwish(file.data);
+freud.listen('*:before', function (file) {
+  if (!-ignore.indexOf(file.name)) {
+    file.write = false;
+  }
 
   return file;
 });
 
-freud.listen('min.js', function (file) {
-  file.data = uglify.minify(file.data, { fromString: true });
-});
+freud.list('*:after', function (file) {
+  if (file.name.match(/\.min.js$/)) {
+    file.data = uglify.minify(file.data, { fromString: true });
+  }
 
-freud.listen('*:before', function (file) {
-  if (!-ignore.indexOf(file.name)) {
-    file.write = false;
+  if (file.name.match(/\.min.css$/)) {
+      file.data = sqwish(file.data);
   }
 
   return file;
@@ -133,15 +93,16 @@ if (config.syncOnInit) {
 }
 
 freud.on('compiled', function (filename) {
-  if (!filename.match(/\.jade$/)) {
-    _rebuildUncanny(function () {
-      _recompileJade();
+  var jadeExtension = config.jade || '.html';
+  if (!filename.match(/\.html$/)) {
+    unlib.rebuildUncanny(function () {
+      unlib.recompileJade();
     });
   }
-  if (filename.match(/(\.jpg$|\.png$|\.gif$)/)) {
+  if (filename.match(/(\.jpg$|\.png$|\.gif$)/) && config.optimizeImages) {
     smushit(config.target + filename);
   }
 });
 
-_rebuildUncanny();
+unlib.rebuildUncanny();
 process.title = config.title || 'uncanny.';
