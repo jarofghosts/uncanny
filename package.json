@@ -1,17 +1,16 @@
 {
   "name": "uncanny",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "description": "flat file blog",
   "main": "index.js",
   "dependencies": {
     "freud": "*",
     "node-markdown": "*",
-    "jade": "*",
+    "ejs": "*",
     "coffee-script": "*",
     "stylus": "*",
     "sqwish": "*",
-    "uglify-js": "*",
-    "node-smushit": "*"
+    "uglify-js": "*"
   },
   "repository": {
     "type": "git",

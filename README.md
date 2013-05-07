@@ -6,14 +6,14 @@ Generate/compile static files based on file extension. Operates primarily off of
 
 ```js
 {
-  "source": "/home/coolguy/blog-src",
+  "source": "/home/coolguy/blog",
   "target": "/var/www/coolguysblog"
 }
 ```
 
 Will watch `source` for changes and compile them, then dump them into `target`. Current supported extensions are:
 * `.md` parsed as [Markdown](http://daringfireball.net/projects/markdown/syntax) using [node-markdown](https://github.com/andris9/node-markdown) into HTML.
-* `.jade` parsed as [jade](http://jade-lang.com/) using [jade's official node module](https://github.com/visionmedia/jade) into HTML.
+* `.ejs` parsed as [ejs](http://embeddedjs.com/) using [ejs' official node module](https://github.com/visionmedia/ejs)
 * `.coffee` parsed as [CoffeeScript](http://coffeescript.org/) using [CoffeeScript's official node module](https://github.com/jashkenas/coffee-script/) into JavaScript.
 * `.styl` parsed as [stylus](http://learnboost.github.io/stylus/) using [stylus' official node module](https://github.com/learnboost/stylus) into CSS.
 
