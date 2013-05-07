@@ -47,14 +47,20 @@ function startUncanny() {
 
   uncanny.directories[''].listen('ejs', function (file) {
     file.name = file.name.replace(/\.ejs$/, '.html');
-    file.data = ejs.render(file.data, { uncanny: uncanny.uncanny });
+    file.data = ejs.render(file.data, {
+      filename: uncanny.source + file.name,
+      uncanny: uncanny.uncanny
+    });
 
     return file;
   });
 
   uncanny.directories.templates.listen('ejs', function (file) {
     file.name = file.name.replace(/\.ejs$/, '.html');
-    file.data = ejs.render(file.data, { uncanny: uncanny.uncanny });
+    file.data = ejs.render(file.data, {
+      filename: uncanny.source + 'templates/' + file.name,
+      uncanny: uncanny.uncanny
+    });
 
     return file;
   });
@@ -129,6 +135,10 @@ function startUncanny() {
       unlib.recompile(uncanny, directory);
     });
   }
+
+  unlib.rebuildUncanny(uncanny, function () {
+    console.log('good to go.');
+  });
 
 }
 
