@@ -23,10 +23,11 @@ var Freud = require('freud').Freud,
     "ignore": config.ignore || [],
     "directories": {},
     "blogDateRegEx": /^[0-9]{4}\-[0-9]{2}\-[0-9]{2}/,
+    "blogDateExtract": /^([0-9]{4})\-([0-9]{2})\-([0-9]{2})/
   };
 
 function startUncanny() {
-  ['blogs', 'scripts', 'styles', 'templates'].forEach(function (directory) {
+  ['blogs', 'scripts', 'styles', '', 'templates'].forEach(function (directory) {
 
     uncanny.directories[directory] =
       new Freud(uncanny.source + directory, uncanny.target + directory, {
@@ -35,13 +36,20 @@ function startUncanny() {
       });
 
     uncanny.directories[directory].listen('*:before', function (file) {
-      if (!-ignore.indexOf(file.name)) {
+      if (!-uncanny.ignore.indexOf(file.name)) {
         file.write = false;
       }
 
       return file;
     });
 
+  });
+
+  uncanny.directories[''].listen('ejs', function (file) {
+    file.name = file.name.replace(/\.ejs$/, '.html');
+    file.data = ejs.render(file.data, { uncanny: uncanny.uncanny });
+
+    return file;
   });
 
   uncanny.directories.templates.listen('ejs', function (file) {
@@ -55,9 +63,10 @@ function startUncanny() {
     if (!file.name.match(uncanny.blogDateRegEx)) {
       unlib.fixBlogName(uncanny, file.name);
       file.write = false;
+
       return file;
     }
-    file.name = file.name.replace(uncanny.blogDateRegEx, '');
+    file.name = file.name.replace(uncanny.blogDateRegEx, '').substring(1);
     file.name = file.name.replace(/\.md$/, '.htm');
     file.data = md(file.data);
 
@@ -97,24 +106,30 @@ function startUncanny() {
     return file;
   });
 
-  uncanny.directories.forEach(function (directory) {
+  ['blogs', 'scripts', 'styles', '', 'templates'].forEach(function (directory) {
     uncanny.directories[directory].go();
   });
 
-}
-
-['blogs', 'scripts', 'styles'].forEach(function (directory) {
-  uncanny.directories[directory].on('compiled', function (filename) {
-    unlib.rebuildUncanny(uncanny, function () {
-      unlib.recompile(uncanny, 'templates');
+  ['blogs', 'scripts', 'styles'].forEach(function (directory) {
+    uncanny.directories[directory].on('compiled', function (filename) {
+      unlib.rebuildUncanny(uncanny, function () {
+        unlib.recompile(uncanny, 'templates');
+      });
     });
   });
-});
 
-if (config.syncOnInit) {
-  ['blogs', 'scripts', 'styles', 'templates'].forEach(function (directory) {
-    unlib.recompile(uncanny, directory);
-  });
+  uncanny.directories.templates.on('compiled', function () {
+    unlib.rebuildUncanny(uncanny, function () {
+      unlib.recompile(uncanny, '');
+    });
+  })
+
+  if (config.syncOnInit) {
+    ['blogs', 'scripts', 'styles', 'templates', ''].forEach(function (directory) {
+      unlib.recompile(uncanny, directory);
+    });
+  }
+
 }
 
 unlib.bootstrap(uncanny, startUncanny);

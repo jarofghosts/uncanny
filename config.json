@@ -1,6 +1,6 @@
 {
-  "source": "/home/jarofghosts/flog-src/",
-  "target": "/home/jarofghosts/flog/",
+  "source": "/home/jarofghosts/Projects/mahblog",
+  "target": "/home/jarofghosts/Dropbox/uncanny",
   "ignore": [
     "secrets.md"
   ],
