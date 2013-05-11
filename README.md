@@ -1,6 +1,5 @@
 uncanny
 ====
-----
 
 Generate/compile static files based on file extension. Operates primarily off of `config.json` in the main directory as such:
 

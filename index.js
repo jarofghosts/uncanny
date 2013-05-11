@@ -11,7 +11,7 @@ var Freud = require('freud').Freud,
   unlib = require('./lib/uncanny.js'),
   uncanny = {
     "uncanny": {
-      "version": "0.1.0",
+      "version": "0.1.1",
       "blogs": [],
       "scripts": [],
       "styles": [],
@@ -65,7 +65,7 @@ function startUncanny() {
     return file;
   });
 
-  uncanny.directories.blogs.listen('md', function (file) {
+  uncanny.directories.blogs.listen(['md', 'markdown', 'mkd'], function (file) {
     if (!file.name.match(uncanny.blogDateRegEx)) {
       unlib.fixBlogName(uncanny, file.name);
       file.write = false;
@@ -73,7 +73,7 @@ function startUncanny() {
       return file;
     }
     file.name = file.name.replace(uncanny.blogDateRegEx, '').substring(1);
-    file.name = file.name.replace(/\.md$/, '.htm');
+    file.name = file.name.replace(/\.[^.]+$/, '.htm');
     file.data = md(file.data);
 
     return file;
@@ -94,7 +94,7 @@ function startUncanny() {
     return file;
   });
 
-  uncanny.directories.styles.listen('styl', function (file) {
+  uncanny.directories.styles.listen(['styl', 'stylus'], function (file) {
     file.name = file.name.replace(/\.styl$/, '.css');
     stylus.render(file.data, function (err, css) {
       if (err) { throw err; }
@@ -106,14 +106,10 @@ function startUncanny() {
 
   uncanny.directories.styles.listen('*:after', function (file) {
     if (file.name.match(/\.min.css$/)) {
-        file.data = sqwish(file.data);
+      file.data = sqwish(file.data);
     }
 
     return file;
-  });
-
-  ['blogs', 'scripts', 'styles', '', 'templates'].forEach(function (directory) {
-    uncanny.directories[directory].go();
   });
 
   ['blogs', 'scripts', 'styles'].forEach(function (directory) {
@@ -128,7 +124,11 @@ function startUncanny() {
     unlib.rebuildUncanny(uncanny, function () {
       unlib.recompile(uncanny, '');
     });
-  })
+  });
+
+  ['blogs', 'scripts', 'styles', '', 'templates'].forEach(function (directory) {
+    uncanny.directories[directory].go();
+  });
 
   if (config.syncOnInit) {
     ['blogs', 'scripts', 'styles', 'templates', ''].forEach(function (directory) {
