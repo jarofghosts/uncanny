@@ -20,6 +20,9 @@
     "blog",
     "static"
   ],
+  "scripts": {
+    "start": "node index.js"
+  },
   "author": "jesse keane <me@jessekeane.me> (http://jessekeane.me)",
   "license": "BSD"
 }

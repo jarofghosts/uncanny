@@ -65,6 +65,14 @@ function startUncanny() {
     return file;
   });
 
+  uncanny.directories.blogs.listen('ejs', function (file) {
+    if (file.name === 'layout.ejs') {
+      file.write = false;
+    }
+
+    return false;
+  });
+
   uncanny.directories.blogs.listen(['md', 'markdown', 'mkd'], function (file) {
     if (!file.name.match(uncanny.blogDateRegEx)) {
       unlib.fixBlogName(uncanny, file.name);
