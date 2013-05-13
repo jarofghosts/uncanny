@@ -11,7 +11,7 @@ var Freud = require('freud').Freud,
   unlib = require('./lib/uncanny.js'),
   uncanny = {
     "uncanny": {
-      "version": "0.1.1",
+      "version": "0.1.2",
       "blogs": [],
       "scripts": [],
       "styles": [],
