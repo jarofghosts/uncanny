@@ -130,15 +130,11 @@ function startUncanny() {
   });
 
   uncanny.directories.templates.on('compiled', function () {
-    unlib.rebuildUncanny(uncanny, function () {
-      unlib.recompile(uncanny, '');
-    });
+    unlib.recompile(uncanny, '');
   });
 
   uncanny.directories.templates.on('recompiled', function () {
-    unlib.rebuildUncanny(uncanny, function () {
-      unlib.recompile(uncanny, '');
-    });
+    unlib.recompile(uncanny, '');
   });
 
   uncanny.directories.blogs.on('unlinked', function (filename) {
