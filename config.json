@@ -1,5 +1,5 @@
 {
-  "source": "/home/jarofghosts/Projects/mahblog",
+  "source": "/home/jarofghosts/Dropbox/mahblog",
   "target": "/home/jarofghosts/Dropbox/uncanny",
   "ignore": [
     "secrets.md"

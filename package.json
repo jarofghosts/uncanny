@@ -10,7 +10,8 @@
     "coffee-script": "*",
     "stylus": "*",
     "sqwish": "*",
-    "uglify-js": "*"
+    "uglify-js": "*",
+    "node-smushit": "*"
   },
   "repository": {
     "type": "git",
