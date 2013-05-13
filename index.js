@@ -21,13 +21,14 @@ var Freud = require('freud').Freud,
     "target": config.target + (config.target.match(/\/$/) ? '' : '/'),
     "watchDot": config.watchDotFile,
     "ignore": config.ignore || [],
+    "customDirs": config.customDirs || [],
     "directories": {},
     "blogDateRegEx": /^[0-9]{4}\-[0-9]{2}\-[0-9]{2}/,
     "blogDateExtract": /^([0-9]{4})\-([0-9]{2})\-([0-9]{2})/
   };
 
 function startUncanny() {
-  ['blogs', 'scripts', 'styles', '', 'templates'].forEach(function (directory) {
+  uncanny.customDirs.concat(['blogs', 'scripts', 'styles', '', 'templates']).forEach(function (directory) {
 
     uncanny.directories[directory] =
       new Freud(uncanny.source + directory, uncanny.target + directory, {
@@ -134,7 +135,23 @@ function startUncanny() {
     });
   });
 
-  ['blogs', 'scripts', 'styles', '', 'templates'].forEach(function (directory) {
+  uncanny.directories.templates.on('recompiled', function () {
+    unlib.rebuildUncanny(uncanny, function () {
+      unlib.recompile(uncanny, '');
+    });
+  });
+
+  uncanny.directories.blogs.on('unlinked', function (filename) {
+    var compiledName = filename.replace(/\.htm/, '.html');
+    fs.unlink(uncanny.target + 'blogs/' + compiledName, function (err) {
+      if (err) { throw err; }
+      unlib.rebuildUncanny(uncanny, function () {
+        unlib.recompile(uncanny, 'templates');
+      });
+    });
+  });
+
+  uncanny.customDirs.concat(['blogs', 'scripts', 'styles', '', 'templates']).forEach(function (directory) {
     uncanny.directories[directory].go();
   });
 

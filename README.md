@@ -18,6 +18,8 @@ If they don't already exist, the following directories will be created in both `
 
 Whenever a file is updated in `source`, the corresponding file will be updated in `target`.
 
+----
+
 #### The `blogs` directory accepts: ####
 
 + `2015-10-21-blog-name.md` parsed as [Markdown](http://daringfireball.net/projects/markdown/syntax) using [node-markdown](https://github.com/andris9/node-markdown) into HTML (named as `.htm`). The timestamp at the beginning will be used as the date of the post, if a `md` file is saved in the `source/blogs/` directory without a timestamp, uncanny will attempt to rename it to work.
@@ -52,5 +54,6 @@ Further configuration options include:
 * `syncOnInit` to compile and copy all files from the source directory into the target on startup. Default is `false`.
 * `watchDotFile` to watch and compile dotfiles.
 * `ignore` which accepts an array of filenames to ignore. They will not be moved to the target directory at all.
+* `customDirs` an array of additional directories to watch and sync. Currently, files synced via the customDirs config option are not mutated in any way.
 
 Built on top of [freud](https://github.com/jarofghosts/freud).

@@ -6,5 +6,8 @@
   ],
   "syncOnInit": true,
   "watchDotFile": false,
-  "title": "blawg"
+  "title": "blawg",
+  "customDirs": [
+    "img", "font"
+  ]
 }
