@@ -1,13 +1,11 @@
 {
   "source": "/home/jarofghosts/Dropbox/mahblog",
   "target": "/home/jarofghosts/Dropbox/uncanny",
-  "ignore": [
-    "secrets.md"
-  ],
   "syncOnInit": true,
   "watchDotFile": false,
   "title": "blawg",
   "customDirs": [
     "img", "font"
-  ]
+  ],
+  "optimizeImages": true
 }

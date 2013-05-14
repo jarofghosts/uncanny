@@ -53,7 +53,6 @@ Whenever a file is updated in `source`, the corresponding file will be updated i
 Further configuration options include:
 * `syncOnInit` to compile and copy all files from the source directory into the target on startup. Default is `false`.
 * `watchDotFile` to watch and compile dotfiles.
-* `ignore` which accepts an array of filenames to ignore. They will not be moved to the target directory at all.
 * `customDirs` an array of additional directories to watch and sync. Currently, files synced via the customDirs config option are not mutated in any way.
 
 Built on top of [freud](https://github.com/jarofghosts/freud).

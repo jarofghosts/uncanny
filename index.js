@@ -9,40 +9,47 @@ var Freud = require('freud').Freud,
   uglify = require('uglify-js'),
   ejs = require('ejs'),
   unlib = require('./lib/uncanny.js'),
+  smushit = require('node-smushit'),
+  blockRecompile = false,
   uncanny = {
     "uncanny": {
       "version": "0.1.2",
       "blogs": [],
       "scripts": [],
       "styles": [],
-      "templates": []
+      "templates": [],
+      "images": []
     },
     "source": config.source + (config.source.match(/\/$/) ? '' : '/'),
     "target": config.target + (config.target.match(/\/$/) ? '' : '/'),
     "watchDot": config.watchDotFile,
-    "ignore": config.ignore || [],
     "customDirs": config.customDirs || [],
+    "optimizeImages": config.optimizeImages,
     "directories": {},
     "blogDateRegEx": /^[0-9]{4}\-[0-9]{2}\-[0-9]{2}/,
     "blogDateExtract": /^([0-9]{4})\-([0-9]{2})\-([0-9]{2})/
   };
 
+function smushImage(filename) {
+  if (uncanny.optimizeImages) {
+    smushit.smushit(uncanny.target + 'images/' + filename);
+  }
+}
+
+function triggerBaseRecompile() {
+  if (!blockRecompile) {
+    unlib.recompile(uncanny, '');
+  }
+}
+
 function startUncanny() {
-  uncanny.customDirs.concat(['blogs', 'scripts', 'styles', '', 'templates']).forEach(function (directory) {
+  uncanny.customDirs.concat(['blogs', 'scripts', 'images', 'styles', '', 'templates']).forEach(function (directory) {
 
     uncanny.directories[directory] =
       new Freud(uncanny.source + directory, uncanny.target + directory, {
         "monitorDot": uncanny.watchDot,
         "monitorSquiggle": false
       });
-
-    uncanny.directories[directory].listen('*:before', function (file) {
-      if (!-uncanny.ignore.indexOf(file.name)) {
-        file.write = false;
-      }
-
-      return file;
-    });
 
   });
 
@@ -121,7 +128,7 @@ function startUncanny() {
     return file;
   });
 
-  ['blogs', 'scripts', 'styles'].forEach(function (directory) {
+  ['blogs', 'scripts', 'styles', 'images'].forEach(function (directory) {
     uncanny.directories[directory].on('compiled', function (filename) {
       unlib.rebuildUncanny(uncanny, function () {
         unlib.recompile(uncanny, 'templates');
@@ -130,11 +137,11 @@ function startUncanny() {
   });
 
   uncanny.directories.templates.on('compiled', function () {
-    unlib.recompile(uncanny, '');
+    triggerBaseRecompile();
   });
 
   uncanny.directories.templates.on('recompiled', function () {
-    unlib.recompile(uncanny, '');
+    triggerBaseRecompile();
   });
 
   uncanny.directories.blogs.on('unlinked', function (filename) {
@@ -147,13 +154,21 @@ function startUncanny() {
     });
   });
 
-  uncanny.customDirs.concat(['blogs', 'scripts', 'styles', '', 'templates']).forEach(function (directory) {
+  uncanny.directories.images.on('copied', smushImage);
+  uncanny.directories.images.on('recopied', smushImage);
+
+  uncanny.customDirs.concat(['blogs', 'scripts', 'images', '', 'styles', 'templates']).forEach(function (directory) {
     uncanny.directories[directory].go();
   });
 
   if (config.syncOnInit) {
-    ['blogs', 'scripts', 'styles', 'templates', ''].forEach(function (directory) {
-      unlib.recompile(uncanny, directory);
+    blockRecompile = true;
+    uncanny.customDirs.concat(['', 'blogs', 'scripts', 'styles', 'images', 'templates']).forEach(function (directory) {
+      unlib.recompile(uncanny, directory, function () {
+        if (directory === 'templates') {
+          blockRecompile = false;
+        }
+      });
     });
   }
 
