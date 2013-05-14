@@ -13,7 +13,7 @@ var Freud = require('freud').Freud,
   blockRecompile = false,
   uncanny = {
     "uncanny": {
-      "version": "0.1.2",
+      "version": "0.1.3",
       "blogs": [],
       "scripts": [],
       "styles": [],
