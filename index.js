@@ -25,7 +25,7 @@ var Freud = require('freud').Freud,
     "ignoreCase": config.ignoreCase,
     "customDirs": config.customDirs || [],
     "optimizeImages": config.optimizeImages,
-    "baseDirs": ['blogs', 'scripts', 'images', 'styles', 'templates', '']
+    "baseDirs": ['blogs', 'scripts', 'images', 'styles', 'templates', ''],
     "directories": {},
     "blogDateRegEx": /^[0-9]{4}\-[0-9]{2}\-[0-9]{2}/,
     "blogDateExtract": /^([0-9]{4})\-([0-9]{2})\-([0-9]{2})/
