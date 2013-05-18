@@ -12,7 +12,7 @@ var Freud = require('freud').Freud,
   blockRecompile = false,
   uncanny = {
     "uncanny": {
-      "version": "0.1.3",
+      "version": "0.1.4",
       "blogs": [],
       "scripts": [],
       "styles": [],
@@ -22,8 +22,10 @@ var Freud = require('freud').Freud,
     "source": config.source + (config.source.match(/\/$/) ? '' : '/'),
     "target": config.target + (config.target.match(/\/$/) ? '' : '/'),
     "watchDot": config.watchDotFile,
+    "ignoreCase": config.ignoreCase,
     "customDirs": config.customDirs || [],
     "optimizeImages": config.optimizeImages,
+    "baseDirs": ['blogs', 'scripts', 'images', 'styles', 'templates', '']
     "directories": {},
     "blogDateRegEx": /^[0-9]{4}\-[0-9]{2}\-[0-9]{2}/,
     "blogDateExtract": /^([0-9]{4})\-([0-9]{2})\-([0-9]{2})/
@@ -42,12 +44,13 @@ function triggerBaseRecompile() {
 }
 
 function startUncanny() {
-  uncanny.customDirs.concat(['blogs', 'scripts', 'images', 'styles', '', 'templates']).forEach(function (directory) {
+  uncanny.customDirs.concat(uncanny.baseDirs).forEach(function (directory) {
 
     uncanny.directories[directory] =
       new Freud(uncanny.source + directory, uncanny.target + directory, {
         "monitorDot": uncanny.watchDot,
-        "monitorSquiggle": false
+        "monitorSquiggle": false,
+        "ignoreCase": uncanny.ignoreCase
       });
 
   });
@@ -156,16 +159,21 @@ function startUncanny() {
   uncanny.directories.images.on('copied', smushImage);
   uncanny.directories.images.on('recopied', smushImage);
 
-  uncanny.customDirs.concat(['blogs', 'scripts', 'images', '', 'styles', 'templates']).forEach(function (directory) {
+  uncanny.customDirs.concat(uncanny.baseDirs).forEach(function (directory) {
     uncanny.directories[directory].go();
   });
 
   if (config.syncOnInit) {
     blockRecompile = true;
-    uncanny.customDirs.concat(['', 'blogs', 'scripts', 'styles', 'images', 'templates']).forEach(function (directory) {
+    uncanny.customDirs.concat(uncanny.baseDirs).forEach(function (directory) {
       unlib.recompile(uncanny, directory, function () {
-        if (directory === 'templates') {
+        if (directory === '') {
           blockRecompile = false;
+          if (process.argv[2] == 'quick') {
+            uncanny.customDirs.concat(uncanny.baseDirs).forEach(function (directory) {
+              uncanny.directories[directory].stop();
+            });
+          }
         }
       });
     });

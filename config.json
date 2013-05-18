@@ -7,5 +7,6 @@
   "customDirs": [
     "img", "font"
   ],
+  "ignoreCase": true,
   "optimizeImages": true
 }
