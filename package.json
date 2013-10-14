@@ -5,13 +5,13 @@
   "main": "index.js",
   "dependencies": {
     "freud": "*",
-    "node-markdown": "*",
     "ejs": "*",
     "coffee-script": "*",
     "stylus": "*",
     "sqwish": "*",
     "uglify-js": "*",
-    "node-smushit": "*"
+    "node-smushit": "*",
+    "marked": "~0.2.9"
   },
   "repository": {
     "type": "git",
@@ -25,5 +25,5 @@
     "start": "node index.js"
   },
   "author": "jesse keane <me@jessekeane.me> (http://jessekeane.me)",
-  "license": "BSD"
+  "license": "MIT"
 }

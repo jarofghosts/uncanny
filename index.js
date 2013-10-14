@@ -1,7 +1,7 @@
 var Freud = require('freud').Freud,
   fs = require('fs'),
   config = require('./config.json'),
-  md = require('node-markdown').Markdown,
+  md = require('marked').Markdown,
   stylus = require('stylus'),
   coffee = require('coffee-script'),
   sqwish = require('sqwish').minify,
