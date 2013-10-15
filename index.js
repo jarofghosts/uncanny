@@ -1,45 +1,45 @@
 var Freud = require('freud').Freud,
-  fs = require('fs'),
-  config = require('./config.json'),
-  md = require('marked'),
-  stylus = require('stylus'),
-  coffee = require('coffee-script'),
-  sqwish = require('sqwish').minify,
-  uglify = require('uglify-js'),
-  ejs = require('ejs'),
-  unlib = require('./lib/uncanny.js'),
-  smushit = require('node-smushit'),
-  blockRecompile = false,
-  uncanny = {
-    "uncanny": {
-      "version": "0.1.4",
-      "blogs": [],
-      "scripts": [],
-      "styles": [],
-      "templates": [],
-      "images": []
-    },
-    "source": config.source + (config.source.match(/\/$/) ? '' : '/'),
-    "target": config.target + (config.target.match(/\/$/) ? '' : '/'),
-    "watchDot": config.watchDotFile,
-    "ignoreCase": config.ignoreCase,
-    "customDirs": config.customDirs || [],
-    "optimizeImages": config.optimizeImages,
-    "baseDirs": ['blogs', 'scripts', 'images', 'styles', 'templates', ''],
-    "directories": {},
-    "blogDateRegEx": /^[0-9]{4}\-[0-9]{2}\-[0-9]{2}/,
-    "blogDateExtract": /^([0-9]{4})\-([0-9]{2})\-([0-9]{2})/
-  };
+    fs = require('fs'),
+    config = require('./config.json'),
+    md = require('marked'),
+    stylus = require('stylus'),
+    coffee = require('coffee-script'),
+    sqwish = require('sqwish').minify,
+    uglify = require('uglify-js'),
+    ejs = require('ejs'),
+    unlib = require('./lib/uncanny.js'),
+    smushit = require('node-smushit'),
+    blockRecompile = false,
+    uncanny = {
+      uncanny: {
+        version: '0.1.4',
+        blogs: [],
+        scripts: [],
+        styles: [],
+        templates: [],
+        images: []
+      },
+      source: config.source + (config.source.match(/\/$/) ? '' : '/'),
+      target: config.target + (config.target.match(/\/$/) ? '' : '/'),
+      watchDot: config.watchDotFile,
+      ignoreCase: config.ignoreCase,
+      customDirs: config.customDirs || [],
+      optimizeImages: config.optimizeImages,
+      baseDirs: ['blogs', 'scripts', 'images', 'styles', 'templates', ''],
+      directories: {},
+      blogDateRegEx: /^[0-9]{4}\-[0-9]{2}\-[0-9]{2}/,
+      blogDateExtract: /^([0-9]{4})\-([0-9]{2})\-([0-9]{2})/
+    }
 
 function smushImage(filename) {
   if (uncanny.optimizeImages) {
-    smushit.smushit(uncanny.target + 'images/' + filename);
+    smushit.smushit(uncanny.target + 'images/' + filename)
   }
 }
 
 function triggerBaseRecompile() {
   if (!blockRecompile) {
-    unlib.recompile(uncanny, '');
+    unlib.recompile(uncanny, '')
   }
 }
 
@@ -48,36 +48,36 @@ function startUncanny() {
 
     uncanny.directories[directory] =
       new Freud(uncanny.source + directory, uncanny.target + directory, {
-        "monitorDot": uncanny.watchDot,
-        "monitorSquiggle": false,
-        "ignoreCase": uncanny.ignoreCase
-      });
+        monitorDot: uncanny.watchDot,
+        monitorSquiggle: false,
+        ignoreCase: uncanny.ignoreCase
+      })
 
-  });
+  })
 
   uncanny.directories[''].listen('ejs', function (file) {
-    file.name = file.name.replace(/\.ejs$/, '.html');
+    file.name = file.name.replace(/\.ejs$/, '.html')
     file.data = ejs.render(file.data, {
       filename: uncanny.source + file.name,
       uncanny: uncanny.uncanny
-    });
+    })
 
-    return file;
-  });
+    return file
+  })
 
   uncanny.directories.templates.listen('ejs', function (file) {
-    file.name = file.name.replace(/\.ejs$/, '.html');
+    file.name = file.name.replace(/\.ejs$/, '.html')
     file.data = ejs.render(file.data, {
       filename: uncanny.source + 'templates/' + file.name,
       uncanny: uncanny.uncanny
-    });
+    })
 
-    return file;
-  });
+    return file
+  })
 
   uncanny.directories.blogs.listen('ejs', function (file) {
     if (file.name === 'layout.ejs') {
-      file.write = false;
+      file.write = false
     }
 
     return false
