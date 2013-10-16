@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var uncanny = require('./lib/main'),
+    glance = require('glance'),
     path = require('path'),
     argv = require('optimist')
     .usage('Usage: $0 [--dir, d <directory>] [--watch] [--serve [port]]')
@@ -23,3 +24,14 @@ try {
   process.exit(1)
 }
 
+uncanny.doStart(config, argv)
+
+if (argv.serve) {
+  var g = glance.createGlance({
+      dir: config.target,
+      port: isNaN(Number(argv.serve)) ? 4997 : Number(argv.serve),
+      indexing: true,
+      nodot: true,
+      verbose: true
+    }).start()
+}

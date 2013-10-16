@@ -3,6 +3,10 @@
   "version": "0.1.4",
   "description": "static blog generator",
   "main": "index.js",
+  "preferGlobal": true,
+  "bin": {
+    "uncanny": "./index.js"
+  },
   "dependencies": {
     "freud": "*",
     "ejs": "*",
@@ -12,7 +16,8 @@
     "uglify-js": "*",
     "node-smushit": "*",
     "marked": "~0.2.9",
-    "optimist": "~0.6.0"
+    "optimist": "~0.6.0",
+    "glance": "~0.2.1"
   },
   "repository": {
     "type": "git",
