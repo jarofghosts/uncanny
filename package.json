@@ -11,7 +11,8 @@
     "sqwish": "*",
     "uglify-js": "*",
     "node-smushit": "*",
-    "marked": "~0.2.9"
+    "marked": "~0.2.9",
+    "optimist": "~0.6.0"
   },
   "repository": {
     "type": "git",
