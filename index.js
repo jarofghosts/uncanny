@@ -20,6 +20,7 @@ var dir = path.resolve(argv.dir)
 try {
   var config = require(path.join(dir, '.uncanny.json'))
 } catch (e) {
+  console.error(e)
   console.error('Invalid config file.')
   process.exit(1)
 }
