@@ -1,38 +1,186 @@
-#!/usr/bin/env node
-
-var uncanny = require('./lib/main'),
-    glance = require('glance'),
+var Freud = require('freud').Freud,
+    fs = require('fs'),
     path = require('path'),
-    argv = require('optimist')
-    .usage('Usage: $0 [--dir, d <directory>] [--watch] [--serve [port]]')
-    .alias('d', 'dir')
-    .string('d')
-    .describe('d', 'Use config from <directory>, defaults to cwd')
-    .default('d', process.cwd())
-    .alias('w', 'watch')
-    .boolean('w')
-    .describe('w', 'Watch source directory for changes')
-    .alias('s', 'serve')
-    .describe('s', 'Open a server for your compiled site on [port]')
-    .argv
+    md = require('marked'),
+    stylus = require('stylus'),
+    coffee = require('coffee-script'),
+    sqwish = require('sqwish').minify,
+    uglify = require('uglify-js'),
+    ejs = require('ejs'),
+    unlib = require('./lib/uncanny.js'),
+    package = require('./package.json')
+    smushit = require('node-smushit'),
+    blockRecompile = false,
+    uncanny = {
+      uncanny: {
+        version: package.version,
+        blogs: [],
+        scripts: [],
+        styles: [],
+        templates: [],
+        images: []
+      },
+      baseDirs: ['blogs', 'scripts', 'images', 'styles', 'templates', ''],
+      directories: {},
+      blogDateRegEx: /^[0-9]{4}\-[0-9]{2}\-[0-9]{2}/,
+      blogDateExtract: /^([0-9]{4})\-([0-9]{2})\-([0-9]{2})/
+    }
+exports.doStart = doStart
 
-var dir = path.resolve(argv.dir)
-try {
-  var config = require(path.join(dir, '.uncanny.json'))
-} catch (e) {
-  console.error(e)
-  console.error('Invalid config file.')
-  process.exit(1)
+function smushImage(filename) {
+  if (uncanny.optimizeImages) {
+    smushit.smushit(path.join(uncanny.target, 'images', filename))
+  }
 }
 
-uncanny.doStart(config, argv)
+function triggerBaseRecompile() {
+  if (!blockRecompile) unlib.recompile(uncanny, '')
+}
 
-if (argv.serve) {
-  var g = glance.createGlance({
-      dir: config.target,
-      port: isNaN(Number(argv.serve)) ? 4997 : Number(argv.serve),
-      indexing: true,
-      nodot: true,
-      verbose: true
-    }).start()
+function startUncanny() {
+  uncanny.customDirs.concat(uncanny.baseDirs).forEach(function (directory) {
+
+    uncanny.directories[directory] =
+      new Freud(path.join(uncanny.source, directory),
+        path.join(uncanny.target, directory), {
+        monitorDot: uncanny.watchDot,
+        monitorSquiggle: false,
+        ignoreCase: uncanny.ignoreCase
+      })
+
+  })
+
+  uncanny.directories[''].listen('ejs', function (file) {
+    file.name = file.name.replace(/\.ejs$/, '.html')
+    file.data = ejs.render(file.data, {
+      filename: path.join(uncanny.source, file.name),
+      uncanny: uncanny.uncanny
+    })
+
+    return file
+  })
+
+  uncanny.directories.templates.listen('ejs', function (file) {
+    file.name = file.name.replace(/\.ejs$/, '.html')
+    file.data = ejs.render(file.data, {
+      filename: path.join(uncanny.source, 'templates', file.name),
+      uncanny: uncanny.uncanny
+    })
+
+    return file
+  })
+
+  uncanny.directories.blogs.listen('ejs', function (file) {
+    if (file.name === 'layout.ejs') file.write = false
+
+    return false
+  })
+
+  uncanny.directories.blogs.listen(['md', 'markdown', 'mkd'], function (file) {
+    if (!file.name.match(uncanny.blogDateRegEx)) {
+      unlib.fixBlogName(uncanny, file.name)
+      file.write = false
+
+      return file
+    }
+    file.name = file.name.replace(uncanny.blogDateRegEx, '').substring(1)
+    file.name = file.name.replace(/\.[^.]+$/, '.htm')
+    file.data = md(file.data)
+
+    return file
+  })
+
+  uncanny.directories.scripts.listen('coffee', function (file) {
+    file.name = file.name.replace(/\.coffee$/, '.js')
+    file.data = coffee.compile(file.data)
+
+    return file
+  })
+
+  uncanny.directories.scripts.listen('*:after', function (file) {
+    if (file.name.match(/\.min.js$/)) {
+      file.data = uglify.minify(file.data, { fromString: true }).code
+    }
+
+    return file
+  })
+
+  uncanny.directories.styles.listen(['styl', 'stylus'], function (file) {
+    file.name = file.name.replace(/\.styl$/, '.css')
+    stylus.render(file.data, function (err, css) {
+      if (err) throw err
+      file.data = css
+    })
+
+    return file
+  })
+
+  uncanny.directories.styles.listen('*:after', function (file) {
+    if (file.name.match(/\.min.css$/)) file.data = sqwish(file.data)
+
+    return file
+  })
+
+  var sections = ['blogs', 'scripts', 'styles', 'images']
+
+  sections.forEach(function (directory) {
+    uncanny.directories[directory].on('compiled', function (filename) {
+      unlib.rebuildUncanny(uncanny, function () {
+        unlib.recompile(uncanny, 'templates')
+      })
+    })
+  })
+
+  uncanny.directories.templates.on('compiled', triggerBaseRecompile)
+  uncanny.directories.templates.on('recompiled', triggerBaseRecompile)
+
+  uncanny.directories.blogs.on('unlinked', function (filename) {
+    var compiledName = filename.replace(/\.htm/, '.html')
+    fs.unlink(path.join(uncanny.target, 'blogs', compiledName),
+      function (err) {
+        if (err) throw err
+        unlib.rebuildUncanny(uncanny, function () {
+          unlib.recompile(uncanny, 'templates')
+        })
+      })
+  })
+
+  uncanny.directories.images.on('copied', smushImage)
+  uncanny.directories.images.on('recopied', smushImage)
+
+  uncanny.customDirs.concat(uncanny.baseDirs).forEach(function (directory) {
+    uncanny.directories[directory].go()
+  })
+
+  blockRecompile = true
+  uncanny.customDirs.concat(uncanny.baseDirs).forEach(function (directory) {
+    unlib.recompile(uncanny, directory, function () {
+      if (directory === '') {
+        blockRecompile = false
+        if (!uncanny.watch) {
+          uncanny.customDirs.concat(uncanny.baseDirs).forEach(stopListeners)
+        }
+      }
+    })
+  })
+  function stopListeners (directory) {
+    uncanny.directories[directory].stop()
+  }
+
+  unlib.rebuildUncanny(uncanny, function () {
+    console.log('rebuilt')
+  })
+
+}
+function doStart(config, cli) {
+  uncanny.source = path.resolve(config.source)
+  uncanny.target = path.resolve(config.source)
+  uncanny.watchDot = config.watchDotFile
+  uncanny.ignoreCase = config.ignoreCase
+  uncanny.customDirs = config.customDirs || []
+  uncanny.optimizeImages = config.optimizeImages
+  uncanny.watch = cli.watch
+
+  unlib.bootstrap(uncanny, startUncanny)
+  process.title = config.title || 'uncanny.'
 }

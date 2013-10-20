@@ -5,7 +5,7 @@
   "main": "index.js",
   "preferGlobal": true,
   "bin": {
-    "uncanny": "./index.js"
+    "uncanny": "./bin/uncanny.js"
   },
   "dependencies": {
     "freud": "*",
