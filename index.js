@@ -168,13 +168,13 @@ function startUncanny() {
   }
 
   unlib.rebuildUncanny(uncanny, function () {
-    console.log('rebuilt')
+    process.stdout.write('ready\n')
   })
 
 }
 function doStart(config, cli) {
   uncanny.source = path.resolve(config.source)
-  uncanny.target = path.resolve(config.source)
+  uncanny.target = path.resolve(config.target)
   uncanny.watchDot = config.watchDotFile
   uncanny.ignoreCase = config.ignoreCase
   uncanny.customDirs = config.customDirs || []
