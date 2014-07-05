@@ -8,17 +8,17 @@
     "uncanny": "./bin/uncanny.js"
   },
   "dependencies": {
-    "ejs": "*",
-    "coffee-script": "*",
-    "stylus": "*",
-    "sqwish": "*",
-    "uglify-js": "*",
-    "node-smushit": "*",
-    "marked": "~0.2.9",
-    "optimist": "~0.6.0",
-    "glance": "~0.2.1",
-    "mkdirp": "~0.3.5",
-    "freud": "~0.2.8"
+    "ejs": "^1.0.0",
+    "freud": "^0.2.8",
+    "glance": "^1.0.0",
+    "highlight.js": "^8.0.0",
+    "marked": "^0.2.10",
+    "mkdirp": "^0.3.5",
+    "node-smushit": "^0.5.1",
+    "optimist": "^0.6.1",
+    "sqwish": "^0.2.2",
+    "stylus": "^0.47.1",
+    "uglify-js": "^2.4.14"
   },
   "repository": {
     "type": "git",
