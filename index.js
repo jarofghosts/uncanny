@@ -58,7 +58,6 @@ freudOptions = {
 
 md.setOptions({
     highlight: highlightCode
-  , breaks: true
   , tables: true
 })
 
