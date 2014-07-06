@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "ejs": "^1.0.0",
-    "freud": "^0.2.8",
+    "freud": "^1.0.3",
     "glance": "^1.0.0",
     "highlight.js": "^8.0.0",
     "marked": "^0.2.10",

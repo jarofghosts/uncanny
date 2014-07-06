@@ -4,9 +4,9 @@ var path = require('path')
 var highlight = require('highlight.js')
   , smushit = require('node-smushit')
   , sqwish = require('sqwish').minify
-  , Freud = require('freud').Freud
   , uglify = require('uglify-js')
   , stylus = require('stylus')
+  , Freud = require('freud')
   , md = require('marked')
   , ejs = require('ejs')
 
